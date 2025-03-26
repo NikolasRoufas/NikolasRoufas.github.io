@@ -540,7 +540,9 @@
         <nav>
             <ul>
                 <li><a href="#about">About</a></li>
-                <li><a href="#research">Research</a></li>
+                <li><a href="#publications">Publications</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#projects">Projects</a></li>
                 <li><a href="#experience">Experience</a></li>
                 <li><a href="#education">Education</a></li>
                 <li><a href="#skills">Skills</a></li>
@@ -602,6 +604,8 @@
                 <circle cx="25" cy="65" r="2" fill="#000" />
             </svg>
             <h2>Publications</h2>
+
+            
             
             <style>
                 .publications-container {
@@ -776,6 +780,101 @@
             </div>
         </section>
         
+        <section id="blog">
+            <svg class="section-graphic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <rect x="20" y="30" width="60" height="40" fill="none" stroke="#000" stroke-width="2" />
+            <line x1="30" y1="40" x2="70" y2="40" stroke="#000" stroke-width="1" />
+            <line x1="30" y1="50" x2="70" y2="50" stroke="#000" stroke-width="1" />
+            <line x1="30" y1="60" x2="55" y2="60" stroke="#000" stroke-width="1" />
+            <circle cx="25" cy="35" r="2" fill="#000" />
+            </svg>
+            <style>
+            .blog-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            }
+            .blog-post {
+            background-color: var(--secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            }
+            .blog-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+            .blog-post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            }
+            .blog-post-content {
+            padding: 1.5rem;
+            }
+            .blog-post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+            }
+            .blog-post-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--dark);
+            }
+            .blog-post-excerpt {
+            color: #555;
+            margin-bottom: 1rem;
+            }
+            .blog-post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            }
+            .blog-post-tag {
+            background-color: var(--accent-light);
+            color: var(--accent);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            }
+            .read-more {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            }
+            .read-more:hover {
+            color: #0051c7;
+            }
+            </style>
+            <h2>Blog</h2>
+            <div class="blog-container">
+            <!-- Blog Post 1 -->
+            <div class="blog-post">
+            <div class="blog-post-content">
+            <div class="blog-post-meta">
+            <span>July 15, 2025</span>
+            <span>5 min read</span>
+            </div>
+            <h3 class="blog-post-title">ClimateBERT-NetZero: Notes</h3>
+            <p class="blog-post-excerpt">The paper ClimateBERT-NetZero: Detecting and Assessing Net Zero and Reduction Targets presents an AI-driven solution to this issue. By leveraging natural language processing (NLP), this research introduces a model that automatically detects and evaluates net zero and reduction targets from textual data.</p>
+            <div class="blog-post-tags">
+            <span class="blog-post-tag">ClimateBERT</span>
+            <span class="blog-post-tag">Machine Learning</span>
+            </div>
+            <a href="https://medium.com/@nikolaosroufas/climatebert-netzero-notes-829fbb039334" class="read-more">Read More →</a>
+            </div>
+            </div>
+            
+           
+            </section>
+
         <section id="research">
             <svg class="section-graphic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
                 <rect x="20" y="20" width="60" height="60" fill="none" stroke="#000" stroke-width="2" />
