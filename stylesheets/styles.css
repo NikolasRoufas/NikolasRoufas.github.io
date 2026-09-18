@@ -91,8 +91,10 @@ button:focus-visible {
 
 .portrait {
   border-radius: 10px;
-  width: 116px;
-  height: 116px;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   margin-top: 20px;
   margin-bottom: 18px;
