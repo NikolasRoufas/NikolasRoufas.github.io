@@ -12,6 +12,8 @@
 
 <title>Nikolaos Roufas | AI Research Assistant</title>
 <meta name="description" content="Nikolaos Roufas is an AI researcher and Computer Science student working on machine learning, explainable AI, natural language processing, and interpretable neural architectures.">
+<meta name="author" content="Nikolaos Roufas">
+<meta name="robots" content="index, follow">
 <link rel="canonical" href="https://nikolaosroufas.me">
 
 <meta property="og:type" content="website">
@@ -32,28 +34,176 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "Nikolaos Roufas",
-  "url": "https://nikolaosroufas.me",
-  "image": "https://nikolaosroufas.me/profile.jpg",
-  "email": "mailto:nikolaosroufas@gmail.com",
-  "jobTitle": "AI Research Assistant",
-  "affiliation": [
-    { "@type": "CollegeOrUniversity", "name": "Ionian University" },
-    { "@type": "CollegeOrUniversity", "name": "Sapienza University of Rome" }
-  ],
-  "sameAs": [
-    "https://github.com/NikolasRoufas",
-    "https://gr.linkedin.com/in/nikolaosroufas",
-    "https://scholar.google.com/citations?user=7fCD268AAAAJ&hl=en&oi=ao",
-    "https://orcid.org/0009-0005-6139-743X"
-  ],
-  "knowsAbout": [
-    "Machine Learning",
-    "Deep Learning",
-    "Explainable AI",
-    "Natural Language Processing",
-    "Retrieval-Augmented Generation"
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://nikolaosroufas.me/#person",
+      "name": "Nikolaos Roufas",
+      "givenName": "Nikolaos",
+      "familyName": "Roufas",
+      "url": "https://nikolaosroufas.me",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" },
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://nikolaosroufas.me/profile.jpg",
+        "width": 480,
+        "height": 480
+      },
+      "description": "AI researcher and Computer Science undergraduate at Ionian University, with research experience at Sapienza University of Rome, working on machine learning, explainable AI, and natural language processing.",
+      "email": "nikolaosroufas@gmail.com",
+      "jobTitle": "AI Research Assistant",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Corfu",
+        "addressCountry": "GR"
+      },
+      "affiliation": [
+        { "@type": "CollegeOrUniversity", "name": "Ionian University", "url": "https://ionio.gr" },
+        { "@type": "CollegeOrUniversity", "name": "Sapienza University of Rome", "url": "https://www.uniroma1.it" }
+      ],
+      "knowsAbout": [
+        "Machine Learning",
+        "Deep Learning",
+        "Explainable AI",
+        "Natural Language Processing",
+        "Retrieval-Augmented Generation"
+      ],
+      "knowsLanguage": ["Greek", "English", "French", "Portuguese"],
+      "identifier": {
+        "@type": "PropertyValue",
+        "propertyID": "ORCID",
+        "value": "https://orcid.org/0009-0005-6139-743X"
+      },
+      "sameAs": [
+        "https://github.com/NikolasRoufas",
+        "https://gr.linkedin.com/in/nikolaosroufas",
+        "https://scholar.google.com/citations?user=7fCD268AAAAJ&hl=en&oi=ao",
+        "https://orcid.org/0009-0005-6139-743X"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://nikolaosroufas.me/#website",
+      "url": "https://nikolaosroufas.me",
+      "name": "Nikolaos Roufas",
+      "description": "Personal academic website of Nikolaos Roufas, AI researcher and Computer Science student.",
+      "publisher": { "@id": "https://nikolaosroufas.me/#person" },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://nikolaosroufas.me/#webpage",
+      "url": "https://nikolaosroufas.me",
+      "name": "Nikolaos Roufas | AI Research Assistant",
+      "description": "Nikolaos Roufas is an AI researcher and Computer Science student working on machine learning, explainable AI, natural language processing, and interpretable neural architectures.",
+      "isPartOf": { "@id": "https://nikolaosroufas.me/#website" },
+      "about": { "@id": "https://nikolaosroufas.me/#person" },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://nikolaosroufas.me/profile.jpg",
+        "width": 480,
+        "height": 480
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-legalsenn",
+      "name": "Self-Explaining Transformer Architectures for Legal Document Classification",
+      "author": [
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "M. Marinacci" },
+        { "@type": "Person", "name": "A. Kanavos" },
+        { "@type": "Person", "name": "M. Mecella" }
+      ],
+      "isPartOf": { "@type": "Periodical", "name": "Discover Artificial Intelligence" },
+      "publisher": { "@type": "Organization", "name": "Springer Nature" },
+      "creativeWorkStatus": "Under review",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-quantum",
+      "name": "Expressivity, Trainability, and Gradient Scaling in Variational Quantum Classifiers",
+      "author": [
+        { "@type": "Person", "name": "I. Karamitsos" },
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "A. Kanavos" }
+      ],
+      "isPartOf": { "@type": "Periodical", "name": "Discover Computing" },
+      "publisher": { "@type": "Organization", "name": "Springer Nature" },
+      "creativeWorkStatus": "Under review",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-legner",
+      "name": "LegNER: A Domain-Adapted Transformer for Legal Named Entity Recognition and Text Anonymization",
+      "author": [
+        { "@type": "Person", "name": "I. Karamitsos" },
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "K. Al-Hussaeni" },
+        { "@type": "Person", "name": "A. Kanavos" }
+      ],
+      "isPartOf": { "@type": "Periodical", "name": "Frontiers in Artificial Intelligence" },
+      "datePublished": "2025-11-06",
+      "url": "https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1638971/full",
+      "creativeWorkStatus": "Published",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-climate",
+      "name": "Analyzing Public Discourse and Sentiment in Climate Change Discussions Using Transformer-Based Models",
+      "author": [
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "A. Mohasseb" },
+        { "@type": "Person", "name": "I. Karamitsos" },
+        { "@type": "Person", "name": "A. Kanavos" }
+      ],
+      "isPartOf": { "@type": "CreativeWork", "name": "IFIP International Conference on Artificial Intelligence Applications and Innovations (AIAI)" },
+      "publisher": { "@type": "Organization", "name": "Springer" },
+      "datePublished": "2025-06-23",
+      "url": "https://link.springer.com/chapter/10.1007/978-3-031-97313-0_4",
+      "creativeWorkStatus": "Published",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-bigdata",
+      "name": "Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability",
+      "author": [
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "A. Kanavos" },
+        { "@type": "Person", "name": "I. Karamitsos" },
+        { "@type": "Person", "name": "K. Al-Hussaeni" },
+        { "@type": "Person", "name": "M. Maragoudakis" }
+      ],
+      "isPartOf": { "@type": "CreativeWork", "name": "IEEE International Conference on Big Data (BigData)" },
+      "publisher": { "@type": "Organization", "name": "IEEE" },
+      "datePublished": "2025",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11402387",
+      "creativeWorkStatus": "Published",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://nikolaosroufas.me/#pub-protein",
+      "name": "Efficient Protein Folding with Transformer Models Using the Performer Architecture",
+      "author": [
+        { "@id": "https://nikolaosroufas.me/#person" },
+        { "@type": "Person", "name": "I. Karamitsos" },
+        { "@type": "Person", "name": "K. Al-Hussaeni" },
+        { "@type": "Person", "name": "V. C. Gerogiannis" },
+        { "@type": "Person", "name": "A. Kanavos" }
+      ],
+      "isPartOf": { "@type": "CreativeWork", "name": "International Conference on Advances in Information and Communication Technology (ICTA)" },
+      "publisher": { "@type": "Organization", "name": "Springer" },
+      "datePublished": "2025",
+      "url": "https://link.springer.com/chapter/10.1007/978-3-032-18162-6_20",
+      "creativeWorkStatus": "Published",
+      "mainEntityOfPage": { "@id": "https://nikolaosroufas.me/#webpage" }
+    }
   ]
 }
 </script>
@@ -134,13 +284,13 @@
       <div class="pub-year-group">
         <h3 class="pub-year">2026</h3>
 
-        <article class="pub">
+        <article class="pub" id="pub-legalsenn">
           <p class="pub-title">Self-Explaining Transformer Architectures for Legal Document Classification</p>
           <p class="pub-authors"><strong>Nikolaos Roufas</strong>, M. Marinacci, A. Kanavos, M. Mecella</p>
           <p class="pub-venue">Under review &middot; <em>Discover Artificial Intelligence</em>, Springer Nature</p>
         </article>
 
-        <article class="pub">
+        <article class="pub" id="pub-quantum">
           <p class="pub-title">Expressivity, Trainability, and Gradient Scaling in Variational Quantum Classifiers</p>
           <p class="pub-authors">I. Karamitsos, <strong>Nikolaos Roufas</strong>, A. Kanavos</p>
           <p class="pub-venue">Under review &middot; <em>Discover Computing</em>, Springer Nature</p>
@@ -150,25 +300,25 @@
       <div class="pub-year-group">
         <h3 class="pub-year">2025</h3>
 
-        <article class="pub">
+        <article class="pub" id="pub-legner">
           <p class="pub-title">LegNER: A Domain-Adapted Transformer for Legal Named Entity Recognition and Text Anonymization</p>
           <p class="pub-authors">I. Karamitsos, <strong>Nikolaos Roufas</strong>, K. Al-Hussaeni, A. Kanavos</p>
           <p class="pub-venue">Published &middot; <em>Frontiers in Artificial Intelligence</em>, 8, 1638971 &middot; <a href="https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1638971/full">Paper</a></p>
         </article>
 
-        <article class="pub">
+        <article class="pub" id="pub-climate">
           <p class="pub-title">Analyzing Public Discourse and Sentiment in Climate Change Discussions Using Transformer-Based Models</p>
           <p class="pub-authors"><strong>Nikolaos Roufas</strong>, A. Mohasseb, I. Karamitsos, A. Kanavos</p>
           <p class="pub-venue">Published &middot; IFIP International Conference on Artificial Intelligence Applications and Innovations (AIAI), pp. 39&ndash;53, Springer &middot; <a href="https://link.springer.com/chapter/10.1007/978-3-031-97313-0_4">Paper</a></p>
         </article>
 
-        <article class="pub">
+        <article class="pub" id="pub-bigdata">
           <p class="pub-title">Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability</p>
           <p class="pub-authors"><strong>Nikolaos Roufas</strong>, A. Kanavos, I. Karamitsos, K. Al-Hussaeni, M. Maragoudakis</p>
           <p class="pub-venue">Published &middot; IEEE International Conference on Big Data (BigData), pp. 6552&ndash;6559 &middot; <a href="https://ieeexplore.ieee.org/abstract/document/11402387">Paper</a></p>
         </article>
 
-        <article class="pub">
+        <article class="pub" id="pub-protein">
           <p class="pub-title">Efficient Protein Folding with Transformer Models Using the Performer Architecture</p>
           <p class="pub-authors"><strong>Nikolaos Roufas</strong>, I. Karamitsos, K. Al-Hussaeni, V. C. Gerogiannis, A. Kanavos</p>
           <p class="pub-venue">Published &middot; International Conference on Advances in Information and Communication Technology (ICTA) &middot; <a href="https://link.springer.com/chapter/10.1007/978-3-032-18162-6_20">Paper</a></p>
