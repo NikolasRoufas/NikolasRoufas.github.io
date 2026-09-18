@@ -92,7 +92,6 @@ button:focus-visible {
 .portrait {
   border-radius: 10px;
   width: 100%;
-  max-width: 220px;
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
@@ -297,6 +296,18 @@ main p { margin: 0 0 14px; max-width: 66ch; }
   margin: 0 0 14px;
   padding-bottom: 0;
 }
+
+.minor-group {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  opacity: 0.75;
+  margin: 18px 0 8px;
+}
+.minor-group:first-of-type { margin-top: 0; }
 
 .minor-item { margin-bottom: 12px; }
 .minor-item:last-child { margin-bottom: 0; }
