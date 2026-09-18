@@ -55,12 +55,19 @@ button:focus-visible {
 
 .topnav {
   display: flex;
-  justify-content: center;
-  gap: 28px;
+  align-items: center;
+  gap: 12px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--border);
   font-size: 14px;
   letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 28px;
 }
 
 .topnav a {
@@ -83,9 +90,9 @@ button:focus-visible {
 }
 
 .portrait {
-  border-radius: 50%;
-  width: 104px;
-  height: 104px;
+  border-radius: 10px;
+  width: 116px;
+  height: 116px;
   object-fit: cover;
   margin-top: 20px;
   margin-bottom: 18px;
@@ -250,11 +257,24 @@ main p { margin: 0 0 14px; max-width: 66ch; }
 }
 .edu:last-child { border-bottom: none; }
 
+.edu-logo-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 130px;
+  height: 64px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
 .edu-logo {
   width: auto;
-  max-width: 110px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .edu h3 { margin: 0 0 2px; font-size: 16px; }
@@ -296,7 +316,7 @@ main p { margin: 0 0 14px; max-width: 66ch; }
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #15130f;
     --text: #eae6e0;
     --text-soft: #a9a29a;
@@ -304,3 +324,24 @@ main p { margin: 0 0 14px; max-width: 66ch; }
     --accent: #d99a9a;
   }
 }
+
+:root[data-theme="dark"] {
+  --bg: #15130f;
+  --text: #eae6e0;
+  --text-soft: #a9a29a;
+  --border: #322e28;
+  --accent: #d99a9a;
+}
+
+.theme-toggle {
+  margin-left: auto;
+  font: inherit;
+  font-size: 13px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.theme-toggle:hover { color: var(--accent); border-color: var(--accent); }

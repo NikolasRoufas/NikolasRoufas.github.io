@@ -3,20 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
 
-<title>Nikolaos Roufas | AI Researcher</title>
+<title>Nikolaos Roufas | AI Research Assistant</title>
 <meta name="description" content="Nikolaos Roufas is an AI researcher and Computer Science student working on machine learning, explainable AI, natural language processing, and interpretable neural architectures.">
 <link rel="canonical" href="https://nikolaosroufas.me">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Nikolaos Roufas | AI Researcher">
+<meta property="og:title" content="Nikolaos Roufas | AI Research Assistant">
 <meta property="og:description" content="AI researcher and Computer Science student working on machine learning, explainable AI, NLP, and interpretable neural architectures.">
 <meta property="og:url" content="https://nikolaosroufas.me">
 <meta property="og:site_name" content="Nikolaos Roufas">
 <meta property="og:image" content="https://nikolaosroufas.me/profile.jpg">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nikolaos Roufas | AI Researcher">
+<meta name="twitter:title" content="Nikolaos Roufas | AI Research Assistant">
 <meta name="twitter:description" content="AI researcher and Computer Science student working on machine learning, explainable AI, NLP, and interpretable neural architectures.">
 <meta name="twitter:image" content="https://nikolaosroufas.me/profile.jpg">
 
@@ -31,7 +37,7 @@
   "url": "https://nikolaosroufas.me",
   "image": "https://nikolaosroufas.me/profile.jpg",
   "email": "mailto:nikolaosroufas@gmail.com",
-  "jobTitle": "AI Researcher",
+  "jobTitle": "AI Research Assistant",
   "affiliation": [
     { "@type": "CollegeOrUniversity", "name": "Ionian University" },
     { "@type": "CollegeOrUniversity", "name": "Sapienza University of Rome" }
@@ -56,17 +62,20 @@
 <a class="skip-link" href="#main">Skip to content</a>
 
 <nav class="topnav" aria-label="Section">
-  <a href="#about">Research</a>
-  <a href="#publications">Publications</a>
-  <a href="#experience">Experience</a>
-  <a href="NikolaosRoufas_CV.pdf">CV</a>
+  <div class="nav-links">
+    <a href="#about">Research</a>
+    <a href="#publications">Publications</a>
+    <a href="#experience">Experience</a>
+    <a href="NikolaosRoufas_CV.pdf">CV</a>
+  </div>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">Dark mode</button>
 </nav>
 
 <div class="page">
   <aside class="sidebar">
     <img class="portrait" src="profile.jpg" width="176" height="176" alt="Portrait of Nikolaos Roufas" loading="eager">
     <h1>Nikolaos Roufas</h1>
-    <p class="role">AI Researcher</p>
+    <p class="role">AI Research Assistant</p>
     <p class="role-sub">Computer Science Undergraduate</p>
     <p class="location">Corfu, Greece</p>
 
@@ -124,11 +133,11 @@
       <ul class="news-list">
         <li><time datetime="2026-06-18">18 Jun 2026</time><span>Manuscript <em>&ldquo;Expressivity, Trainability, and Gradient Scaling in Variational Quantum Classifiers&rdquo;</em> submitted; currently under review at <em>Discover Computing</em> (Springer Nature).</span></li>
         <li><time datetime="2026-06-05">05 Jun 2026</time><span>Manuscript <em>&ldquo;Self-Explaining Transformer Architectures for Legal Document Classification&rdquo;</em> submitted; currently under review at <em>Discover Artificial Intelligence</em> (Springer Nature).</span></li>
-        <li><time datetime="2025">2025</time><span>Paper <em>&ldquo;Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability&rdquo;</em> published at the IEEE International Conference on Big Data (BigData).</span></li>
-        <li><time datetime="2025">2025</time><span>Paper <em>&ldquo;Efficient Protein Folding with Transformer Models Using the Performer Architecture&rdquo;</em> published at the International Conference on Advances in Information and Communication Technology (ICTA).</span></li>
-        <li><time datetime="2025">2025</time><span>Paper <em>&ldquo;LegNER: A Domain-Adapted Transformer for Legal Named Entity Recognition and Text Anonymization&rdquo;</em> published in <em>Frontiers in Artificial Intelligence</em>.</span></li>
+        <li><time datetime="2026-04-01">01 Apr 2026</time><span>Paper <em>&ldquo;Efficient Protein Folding with Transformer Models Using the Performer Architecture&rdquo;</em> published in the ICTA 2025 proceedings, Springer.</span></li>
+        <li><time datetime="2026-03-06">06 Mar 2026</time><span>Paper <em>&ldquo;Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability&rdquo;</em> published in the IEEE BigData 2025 proceedings.</span></li>
+        <li><time datetime="2025-11-06">06 Nov 2025</time><span>Paper <em>&ldquo;LegNER: A Domain-Adapted Transformer for Legal Named Entity Recognition and Text Anonymization&rdquo;</em> published in <em>Frontiers in Artificial Intelligence</em>.</span></li>
         <li><time datetime="2025-09">Sep 2025</time><span>Began a research visit at the PSSM Lab, DIAG, Sapienza University of Rome, under Prof. Massimo Mecella, as an Erasmus+ exchange student.</span></li>
-        <li><time datetime="2025">2025</time><span>Paper <em>&ldquo;Analyzing Public Discourse and Sentiment in Climate Change Discussions Using Transformer-Based Models&rdquo;</em> published at IFIP AIAI 2025 (Springer).</span></li>
+        <li><time datetime="2025-06-23">23 Jun 2025</time><span>Paper <em>&ldquo;Analyzing Public Discourse and Sentiment in Climate Change Discussions Using Transformer-Based Models&rdquo;</em> published at IFIP AIAI 2025, Springer.</span></li>
         <li><time datetime="2024-11">Nov 2024</time><span>Joined the Humanistic and Social Informatics Lab (HILab), Ionian University, as an undergraduate researcher under Prof. Andreas Kanavos.</span></li>
       </ul>
     </section>
@@ -169,7 +178,7 @@
       <article class="pub">
         <p class="pub-title">Efficient Protein Folding with Transformer Models Using the Performer Architecture</p>
         <p class="pub-authors"><strong>N. Roufas</strong>, I. Karamitsos, K. Al-Hussaeni, V. C. Gerogiannis, A. Kanavos</p>
-        <p class="pub-venue">International Conference on Advances in Information and Communication Technology (ICTA), 2025</p>
+        <p class="pub-venue">International Conference on Advances in Information and Communication Technology (ICTA 2025), Lecture Notes in Networks and Systems, Springer, 2026 &middot; <a href="https://link.springer.com/chapter/10.1007/978-3-032-18162-6_20">Paper</a></p>
       </article>
     </section>
 
@@ -208,7 +217,9 @@
       <h2 id="education-heading">Education &amp; Affiliations</h2>
 
       <div class="edu">
-        <img class="edu-logo" src="Ionian-University-logo-2.gif" alt="Ionian University logo" height="48">
+        <div class="edu-logo-frame">
+          <img class="edu-logo" src="Ionian-University-logo-2.gif" alt="Ionian University logo">
+        </div>
         <div>
           <h3>Ionian University</h3>
           <p>B.Sc. Computer Science, Department of Informatics &middot; 2024&ndash;2028 (expected)</p>
@@ -216,7 +227,9 @@
       </div>
 
       <div class="edu">
-        <img class="edu-logo" src="Sapienza-Logo.png" alt="Sapienza University of Rome logo" height="40">
+        <div class="edu-logo-frame">
+          <img class="edu-logo" src="Sapienza-Logo.png" alt="Sapienza University of Rome logo">
+        </div>
         <div>
           <h3>Sapienza University of Rome</h3>
           <p>Erasmus+ Exchange &middot; Visiting Research Student, DIAG &middot; 2025&ndash;2026</p>
@@ -238,5 +251,25 @@
   <p>&copy; 2026 Nikolaos Roufas &middot; <a href="https://github.com/NikolasRoufas/NikolasRoufas.github.io">Source</a></p>
 </footer>
 
+<script>
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    function current() {
+      var attr = document.documentElement.getAttribute('data-theme');
+      if (attr) return attr;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function updateLabel() {
+      btn.textContent = current() === 'dark' ? 'Light mode' : 'Dark mode';
+    }
+    updateLabel();
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      updateLabel();
+    });
+  })();
+</script>
 </body>
 </html>
