@@ -22,11 +22,16 @@
 <meta property="og:url" content="https://nikolaosroufas.me">
 <meta property="og:site_name" content="Nikolaos Roufas">
 <meta property="og:image" content="https://nikolaosroufas.me/assets/images/profile.jpg">
+<meta property="og:image:width" content="480">
+<meta property="og:image:height" content="480">
+<meta property="og:image:alt" content="Nikolaos Roufas">
+<meta property="og:locale" content="en_US">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Nikolaos Roufas | AI Research Assistant">
 <meta name="twitter:description" content="AI researcher and Computer Science student working on machine learning, explainable AI, NLP, and interpretable neural architectures.">
 <meta name="twitter:image" content="https://nikolaosroufas.me/assets/images/profile.jpg">
+<meta name="twitter:image:alt" content="Nikolaos Roufas">
 
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -91,13 +96,14 @@
       "inLanguage": "en"
     },
     {
-      "@type": "WebPage",
+      "@type": ["WebPage", "ProfilePage"],
       "@id": "https://nikolaosroufas.me/#webpage",
       "url": "https://nikolaosroufas.me",
       "name": "Nikolaos Roufas | AI Research Assistant",
       "description": "Nikolaos Roufas is an AI researcher and Computer Science student working on machine learning, explainable AI, natural language processing, and interpretable neural architectures.",
       "isPartOf": { "@id": "https://nikolaosroufas.me/#website" },
       "about": { "@id": "https://nikolaosroufas.me/#person" },
+      "mainEntity": { "@id": "https://nikolaosroufas.me/#person" },
       "primaryImageOfPage": {
         "@type": "ImageObject",
         "url": "https://nikolaosroufas.me/assets/images/profile.jpg",
@@ -223,19 +229,19 @@
 
 <div class="page">
   <aside class="sidebar">
-    <img class="portrait" src="assets/images/profile.jpg" width="176" height="176" alt="Portrait of Nikolaos Roufas" loading="eager">
+    <img class="portrait" src="assets/images/profile.jpg" width="480" height="480" alt="Nikolaos Roufas, AI researcher and Computer Science student" loading="eager" fetchpriority="high">
     <h1>Nikolaos Roufas</h1>
     <p class="role">AI Research Assistant</p>
     <p class="role-sub">Computer Science Undergraduate</p>
     <p class="location">Corfu, Greece</p>
 
     <ul class="links">
-      <li><a href="mailto:nikolaosroufas@gmail.com">Email</a></li>
-      <li><a href="https://github.com/NikolasRoufas">GitHub</a></li>
-      <li><a href="https://gr.linkedin.com/in/nikolaosroufas">LinkedIn</a></li>
-      <li><a href="https://scholar.google.com/citations?user=7fCD268AAAAJ&amp;hl=en&amp;oi=ao">Google Scholar</a></li>
-      <li><a href="https://orcid.org/0009-0005-6139-743X">ORCID</a></li>
-      <li><a href="NikolaosRoufas_CV.pdf">CV (PDF)</a></li>
+      <li><a href="mailto:nikolaosroufas@gmail.com" aria-label="Email Nikolaos Roufas">Email</a></li>
+      <li><a href="https://github.com/NikolasRoufas" rel="me" aria-label="Nikolaos Roufas on GitHub">GitHub</a></li>
+      <li><a href="https://gr.linkedin.com/in/nikolaosroufas" rel="me" aria-label="Nikolaos Roufas on LinkedIn">LinkedIn</a></li>
+      <li><a href="https://scholar.google.com/citations?user=7fCD268AAAAJ&amp;hl=en&amp;oi=ao" rel="me" aria-label="Nikolaos Roufas on Google Scholar">Google Scholar</a></li>
+      <li><a href="https://orcid.org/0009-0005-6139-743X" rel="me" aria-label="Nikolaos Roufas's ORCID profile">ORCID</a></li>
+      <li><a href="NikolaosRoufas_CV.pdf" aria-label="Download Nikolaos Roufas's CV (PDF)">CV (PDF)</a></li>
     </ul>
 
     <div class="interests">
@@ -260,14 +266,15 @@
       </p>
       <p>
         At the Humanistic and Social Informatics Lab (HILab), Ionian University, I work on
-        transformer-based NLP, interpretable machine learning, and scientific AI &mdash; including a
-        legal-domain BERT model for named-entity recognition and anonymization, a layer-wise study
-        of transformer explainability, an efficient-attention approach to protein-structure
-        prediction, and an investigation of expressivity, trainability, and gradient scaling in
-        variational quantum classifiers. During my Erasmus+ exchange at Sapienza University of
+        transformer-based NLP, interpretable machine learning, and scientific AI &mdash; including
+        <a href="#pub-legner">a legal-domain BERT model for named-entity recognition and anonymization</a>,
+        <a href="#pub-bigdata">a layer-wise study of transformer explainability</a>,
+        <a href="#pub-protein">an efficient-attention approach to protein-structure prediction</a>,
+        and <a href="#pub-quantum">an investigation of expressivity, trainability, and gradient scaling in
+        variational quantum classifiers</a>. During my Erasmus+ exchange at Sapienza University of
         Rome, I conduct research at the PSSM Lab, DIAG, under Prof. Massimo Mecella, where I
-        lead the development of LegalSENN, an intrinsically interpretable transformer
-        architecture for legal document classification. I have also worked in industry as an AI
+        lead the development of <a href="#pub-legalsenn">LegalSENN, an intrinsically interpretable transformer
+        architecture for legal document classification</a>. I have also worked in industry as an AI
         researcher, evaluating large language and multimodal models and building reproducible
         PyTorch evaluation tooling.
       </p>
@@ -336,11 +343,11 @@
           <p class="exp-meta">Undergraduate Researcher &middot; Nov 2024 &ndash; Present &middot; Supervisor: Prof. Andreas Kanavos</p>
         </div>
         <ul>
-          <li>LegNER, a domain-adapted transformer for legal named-entity recognition and text anonymization.</li>
-          <li>Transformer-based sentiment classifiers for climate-change discourse analysis.</li>
-          <li>Layer-wise explainability study linking Local Intrinsic Dimensionality to SHAP attribution strength.</li>
-          <li>A Performer-based protein-structure prediction model using linear attention.</li>
-          <li>Variational quantum classifiers, studying the expressivity&ndash;trainability trade-off.</li>
+          <li><a href="#pub-legner">LegNER, a domain-adapted transformer for legal named-entity recognition and text anonymization</a>.</li>
+          <li><a href="#pub-climate">Transformer-based sentiment classifiers for climate-change discourse analysis</a>.</li>
+          <li><a href="#pub-bigdata">Layer-wise explainability study linking Local Intrinsic Dimensionality to SHAP attribution strength</a>.</li>
+          <li><a href="#pub-protein">A Performer-based protein-structure prediction model using linear attention</a>.</li>
+          <li><a href="#pub-quantum">Variational quantum classifiers, studying the expressivity&ndash;trainability trade-off</a>.</li>
           <li>Maintains the lab&rsquo;s Linux/CUDA GPU research server.</li>
         </ul>
       </article>
@@ -351,7 +358,7 @@
           <p class="exp-meta">Visiting Research Student (Erasmus+) &middot; Sep 2025 &ndash; Jul 2026 &middot; Supervisor: Prof. Massimo Mecella</p>
         </div>
         <ul>
-          <li>Leading development of LegalSENN, an intrinsically interpretable transformer architecture for legal document classification.</li>
+          <li>Leading development of <a href="#pub-legalsenn">LegalSENN, an intrinsically interpretable transformer architecture for legal document classification</a>.</li>
           <li>Combines Legal-BERT representations with a concept bottleneck, input-dependent relevance scores, and additive prediction.</li>
           <li>Evaluated on 7,800 SCOTUS opinions across 13 legal issue classes.</li>
         </ul>
@@ -376,7 +383,7 @@
 
       <div class="edu">
         <div class="edu-logo-frame">
-          <img class="edu-logo" src="assets/images/ionian-university-logo.gif" alt="Ionian University logo">
+          <img class="edu-logo" src="assets/images/ionian-university-logo.gif" width="850" height="298" alt="Ionian University logo" loading="lazy">
         </div>
         <div>
           <h3>Ionian University</h3>
@@ -386,7 +393,7 @@
 
       <div class="edu">
         <div class="edu-logo-frame">
-          <img class="edu-logo" src="assets/images/sapienza-logo.png" alt="Sapienza University of Rome logo">
+          <img class="edu-logo" src="assets/images/sapienza-logo.png" width="780" height="234" alt="Sapienza University of Rome logo" loading="lazy">
         </div>
         <div>
           <h3>Sapienza University of Rome</h3>
