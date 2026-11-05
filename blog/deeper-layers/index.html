@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+
+<title>Do Deeper Transformer Layers Actually Explain Better? | Nikolaos Roufas</title>
+<meta name="description" content="Measuring local intrinsic dimensionality across BERT's layers: what the reproducible part of our IEEE BigData 2025 study shows, what the attribution analysis does not yet support, and why representational complexity is not the same as explanation quality.">
+<meta name="author" content="Nikolaos Roufas">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nikolaosroufas.me/blog/deeper-layers/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Nikolaos Roufas">
+<meta property="og:title" content="Do Deeper Transformer Layers Actually Explain Better?">
+<meta property="og:description" content="Local intrinsic dimensionality across BERT's layers — the reproducible result, the open question, and why complexity is not faithfulness.">
+<meta property="og:url" content="https://nikolaosroufas.me/blog/deeper-layers/">
+<meta property="og:image" content="https://nikolaosroufas.me/assets/blog/deeper-layers/deeper-layers-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Local intrinsic dimensionality of BERT's [CLS] representation across layers 1 to 12.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-11-05T00:00:00+00:00">
+<meta property="article:author" content="https://nikolaosroufas.me/">
+<meta property="article:section" content="Research">
+<meta property="article:tag" content="Explainable AI">
+<meta property="article:tag" content="Intrinsic Dimensionality">
+<meta property="article:tag" content="BERT">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Do Deeper Transformer Layers Actually Explain Better?">
+<meta name="twitter:description" content="Local intrinsic dimensionality across BERT's layers — the reproducible result, the open question, and why complexity is not faithfulness.">
+<meta name="twitter:image" content="https://nikolaosroufas.me/assets/blog/deeper-layers/deeper-layers-og.png">
+<meta name="twitter:image:alt" content="LID across BERT layers.">
+
+<meta name="citation_title" content="Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability">
+<meta name="citation_doi" content="10.1109/BigData66926.2025.11402387">
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&amp;display=swap&amp;text=Nikolaos%20Roufas">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" integrity="sha384-5TcZemv2l/9On385z///+d7MSYlvIEw9FuZTIdZ14vJLqWphw7e7ZPuOiCHJcFCP" crossorigin="anonymous">
+<link rel="stylesheet" href="/assets/css/wordmark.css">
+<link rel="stylesheet" href="/assets/blog/css/blog.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" integrity="sha384-cMkvdD8LoxVzGF/RPUKAcvmm49FQ0oxwDF3BGKtDXcEc+T1b2N+teh/OJfpU0jr6" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.querySelector('.post-body'), {
+        delimiters: [{left: '$$', right: '$$', display: true}, {left: '\\(', right: '\\)', display: false}],
+        throwOnError: false
+      });
+    }
+  });
+</script>
+<script defer src="/assets/blog/js/blog.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": "https://nikolaosroufas.me/blog/deeper-layers/#post",
+  "mainEntityOfPage": "https://nikolaosroufas.me/blog/deeper-layers/",
+  "headline": "Do Deeper Transformer Layers Actually Explain Better?",
+  "description": "Measuring local intrinsic dimensionality across BERT's layers: the reproducible result, the open question about explanations, and why representational complexity is not explanation quality.",
+  "image": "https://nikolaosroufas.me/assets/blog/deeper-layers/deeper-layers-og.png",
+  "datePublished": "2026-11-05",
+  "dateModified": "2026-11-05",
+  "inLanguage": "en",
+  "wordCount": 2117,
+  "keywords": ["Explainable AI", "Local Intrinsic Dimensionality", "BERT", "SHAP", "Representation analysis"],
+  "author": { "@type": "Person", "@id": "https://nikolaosroufas.me/#person", "name": "Nikolaos Roufas", "url": "https://nikolaosroufas.me/" },
+  "publisher": { "@id": "https://nikolaosroufas.me/#person" },
+  "isPartOf": { "@type": "Blog", "@id": "https://nikolaosroufas.me/blog/#blog", "name": "Research notes", "url": "https://nikolaosroufas.me/blog/" },
+  "isBasedOn": {
+    "@type": "ScholarlyArticle",
+    "headline": "Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability",
+    "sameAs": "https://doi.org/10.1109/BigData66926.2025.11402387",
+    "datePublished": "2025-12-08",
+    "isPartOf": { "@type": "CreativeWork", "name": "2025 IEEE International Conference on Big Data (BigData)" },
+    "author": [
+      { "@type": "Person", "name": "Nikolaos Roufas", "@id": "https://nikolaosroufas.me/#person" },
+      { "@type": "Person", "name": "Athanasios Kanavos" },
+      { "@type": "Person", "name": "Ioannis Karamitsos" },
+      { "@type": "Person", "name": "Khalil Al-Hussaeni" },
+      { "@type": "Person", "name": "Manolis Maragoudakis" }
+    ]
+  }
+}
+</script>
+</head>
+<body class="blog">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header>
+  <nav class="site-nav" aria-label="Site">
+    <a class="wordmark" href="/"><span class="wm-first">Nikolaos</span> <span class="wm-last">Roufas</span></a>
+    <div class="nav-links">
+      <a href="/#publications">Publications</a>
+      <a href="/blog/" aria-current="page">Blog</a>
+      <a href="/#experience">Experience</a>
+      <a href="/NikolaosRoufas_CV.pdf">CV</a>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">Dark mode</button>
+  </nav>
+</header>
+
+<main id="main">
+<article itemscope itemtype="https://schema.org/BlogPosting">
+
+  <div class="post-title">
+    <div class="col">
+      <p class="post-kicker"><a href="/blog/">Research notes</a> &middot; Explainable AI</p>
+      <h1 itemprop="headline">Do Deeper Transformer Layers Actually Explain Better?</h1>
+      <p class="post-dek">We measured how the geometry of BERT&rsquo;s representations changes with depth. That part reproduces. Whether it tells us anything about explanations is a different question, and the honest answer is that we have not shown it yet.</p>
+    </div>
+  </div>
+
+  <div class="post-byline">
+    <div class="col byline-grid">
+      <div>
+        <h2>Written by</h2>
+        <p class="who" itemprop="author">Nikolaos Roufas</p>
+        <p>Ionian University</p>
+      </div>
+      <div>
+        <h2>Based on</h2>
+        <p><a href="https://doi.org/10.1109/BigData66926.2025.11402387">Roufas, Kanavos, Karamitsos, Al-Hussaeni &amp; Maragoudakis</a></p>
+        <p>IEEE BigData 2025</p>
+      </div>
+      <div>
+        <h2>Published</h2>
+        <p><time datetime="2026-11-05" itemprop="datePublished">November 5, 2026</time></p>
+        <p>9 min read</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col post-body" itemprop="articleBody">
+
+    <section class="tldr" aria-label="TL;DR">
+      <span class="tldr-label">TL;DR</span>
+      <p>We estimated the <b>local intrinsic dimensionality (LID)</b> of BERT&rsquo;s <code>[CLS]</code> representation at each of its 12 layers, on 500 documents from 20 Newsgroups. LID rises from <b>14.53 at layer 1 to 22.78 at layer 12</b> (+57%), with a clear drop at layer 8. This result is deterministic and <b>reproduces exactly from our public code</b>.</p>
+      <p>The paper also reports that LID correlates with SHAP attribution strength (<i>r</i> = 0.77). <b>We cannot reproduce that part from the released materials.</b> The code does not compute per-layer attributions, Integrated Gradients never ran, and the reported <i>r</i> = 0.7721 is numerically the correlation between LID and layer <i>depth</i>.</p>
+      <p>So the defensible claim is narrow: in pretrained BERT, deeper layers occupy higher-dimensional neighbourhoods. Whether that makes explanations <i>better</i> is untested, and a higher attribution magnitude would not show it anyway.</p>
+    </section>
+
+    <div class="note">
+      <span class="note-label">About this post</span>
+      <p>This is a reproducibility-first account of our own paper. Every number below is either reproduced from the <a href="https://github.com/NikolasRoufas/Deeper-Layers-Explain-Better">public repository</a> or clearly attributed to the paper. Where the two disagree, I say so rather than choose the more convenient one.</p>
+    </div>
+
+    <details class="toc" open>
+      <summary>Contents</summary>
+      <ol>
+        <li><a href="#why">Why explanation quality is hard to pin down</a></li>
+        <li><a href="#lid">What local intrinsic dimensionality measures</a></li>
+        <li><a href="#setup">The experiment</a></li>
+        <li><a href="#q1">Does LID increase with depth?</a></li>
+        <li><a href="#q2">Do higher-LID layers explain better?</a></li>
+        <li><a href="#confound">Why a layer-wise correlation would not settle it</a></li>
+        <li><a href="#sound">What a sound test would look like</a></li>
+        <li><a href="#learned">What we learned</a></li>
+        <li><a href="#limits">Limitations and open questions</a></li>
+        <li><a href="#paper">Paper, code and credits</a></li>
+      </ol>
+    </details>
+
+    <p>When we explain a transformer&rsquo;s prediction, we usually look at its two ends. Attribution methods such as SHAP <a class="cite" href="#ref-4">[4]</a> or Integrated Gradients <a class="cite" href="#ref-5">[5]</a> assign a score to each input token for a given output. In between, the input is rewritten twelve times: each layer of BERT <a class="cite" href="#ref-10">[10]</a> produces a new representation of every token, and each one arranges the data differently in a 768-dimensional space.</p>
+
+    <p>That raises a natural question. If the geometry of these representations changes with depth, does it say anything about how explainable the model is at that depth? Suppose a layer packs its inputs onto a simple, low-dimensional surface. Are attributions computed there more stable, or more faithful, than at a layer where the data spreads across many directions? Or is it the other way round?</p>
+
+    <p>Our IEEE BigData 2025 paper <a class="cite" href="#ref-1">[1]</a> set out to test this with one geometric quantity, <b>local intrinsic dimensionality</b>. This post goes through what we measured, what reproduces, and where the evidence stops.</p>
+
+    <h2 id="why">Why explanation quality is hard to pin down</h2>
+
+    <p>&ldquo;Explanation quality&rdquo; covers at least two different properties. <b>Plausibility</b> asks whether an explanation looks reasonable to a person. <b>Faithfulness</b> asks whether it reflects what the model actually used. The two can come apart: attention weights, for instance, often look plausible while failing basic faithfulness tests <a class="cite" href="#ref-6">[6]</a>. Faithfulness is usually measured by intervention. Remove the tokens an explanation calls important and see whether the prediction changes (<i>comprehensiveness</i>), or keep only those tokens and see whether it survives (<i>sufficiency</i>) <a class="cite" href="#ref-7">[7]</a>.</p>
+
+    <p>This matters for everything that follows. The quantity in our paper is the <b>mean absolute SHAP value</b>: how much attribution mass the method assigns, on average. That is a measure of attribution <i>magnitude</i>. A larger magnitude does not mean a more faithful explanation; it can just as well mean a less calibrated model or a different output scale.</p>
+
+    <h2 id="lid">What local intrinsic dimensionality measures</h2>
+
+    <p>A set of points can live in a high-dimensional space while varying along only a few directions. BERT&rsquo;s vectors have 768 coordinates, but the documents may differ from each other along far fewer independent directions. Intrinsic dimensionality tries to count those directions, and <i>local</i> intrinsic dimensionality counts them in the neighbourhood of each point.</p>
+
+    <p>The intuition comes from counting neighbours. In a \(d\)-dimensional neighbourhood, the number of points within distance \(r\) grows roughly like \(r^{d}\). Double the radius on a curve and you capture about twice as many points; double it on a plane and you capture about four times as many:</p>
+
+    <figure id="fig-intuition">
+      <div class="fig-frame">
+        <span class="schematic-tag">Schematic</span>
+        <div class="panel-grid">
+<svg class="schematic" viewBox="0 0 330 250" role="img" aria-label="Points along a curve: 5 points within radius r, 9 within 2r; estimated dimension 0.8.">
+<circle cx="165" cy="118" r="75.0" style="fill:none;stroke:var(--text-muted);stroke-width:1.2;stroke-dasharray:4 4"/>
+<circle cx="165" cy="118" r="37.5" style="fill:var(--tint);stroke:var(--accent);stroke-width:1.5"/>
+<circle cx="15.0" cy="115.3" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="30.0" cy="115.8" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="45.0" cy="116.7" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="117.9" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="119.1" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="120.1" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="105.0" cy="120.6" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="120.6" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="120.1" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="119.2" r="3" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="118.0" r="4.5" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="116.8" r="3" style="fill:var(--accent)"/>
+<circle cx="195.0" cy="115.9" r="3" style="fill:var(--accent)"/>
+<circle cx="210.0" cy="115.4" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="115.4" r="3" style="fill:var(--text-soft)"/>
+<circle cx="240.0" cy="115.9" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="116.9" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="118.1" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="285.0" cy="119.3" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="300.0" cy="120.2" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="315.0" cy="120.7" r="3" style="fill:var(--bar-muted)"/>
+<text x="206" y="82" class="sub">r</text><text x="223" y="64" class="sub">2r</text>
+<text x="165.0" y="14" text-anchor="middle" style="font-weight:600">Points along a curve</text>
+<text x="165.0" y="228" text-anchor="middle">within r: 5 · within 2r: 9</text>
+<text x="165.0" y="246" text-anchor="middle" class="sub">log₂(9/5) ≈ 0.8</text></svg>
+<svg class="schematic" viewBox="0 0 330 250" role="img" aria-label="Points filling a plane: 21 points within radius r, 81 within 2r; estimated dimension 1.9.">
+<circle cx="165" cy="118" r="75.0" style="fill:none;stroke:var(--text-muted);stroke-width:1.2;stroke-dasharray:4 4"/>
+<circle cx="165" cy="118" r="37.5" style="fill:var(--tint);stroke:var(--accent);stroke-width:1.5"/>
+<circle cx="60.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="118.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="60.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="118.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="75.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="90.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="90.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="105.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="105.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="105.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="133.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="103.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="105.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="105.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="120.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="120.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="133.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="103.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="120.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="135.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="135.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="133.0" r="3" style="fill:var(--accent)"/>
+<circle cx="135.0" cy="118.0" r="3" style="fill:var(--accent)"/>
+<circle cx="135.0" cy="103.0" r="3" style="fill:var(--accent)"/>
+<circle cx="135.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="135.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="150.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="150.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="150.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="150.0" cy="148.0" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="133.0" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="118.0" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="103.0" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="88.0" r="3" style="fill:var(--accent)"/>
+<circle cx="150.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="150.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="150.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="165.0" cy="193.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="165.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="165.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="165.0" cy="148.0" r="3" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="133.0" r="3" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="118.0" r="4.5" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="103.0" r="3" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="88.0" r="3" style="fill:var(--accent)"/>
+<circle cx="165.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="165.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="165.0" cy="43.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="180.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="180.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="180.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="180.0" cy="148.0" r="3" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="133.0" r="3" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="118.0" r="3" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="103.0" r="3" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="88.0" r="3" style="fill:var(--accent)"/>
+<circle cx="180.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="180.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="180.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="195.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="195.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="133.0" r="3" style="fill:var(--accent)"/>
+<circle cx="195.0" cy="118.0" r="3" style="fill:var(--accent)"/>
+<circle cx="195.0" cy="103.0" r="3" style="fill:var(--accent)"/>
+<circle cx="195.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="195.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="210.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="210.0" cy="178.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="133.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="103.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="58.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="210.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="225.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="225.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="225.0" cy="163.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="148.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="133.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="103.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="88.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="73.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="225.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="225.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="118.0" r="3" style="fill:var(--text-soft)"/>
+<circle cx="240.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="240.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="118.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="255.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="193.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="178.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="163.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="148.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="133.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="118.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="103.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="88.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="73.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="58.0" r="3" style="fill:var(--bar-muted)"/>
+<circle cx="270.0" cy="43.0" r="3" style="fill:var(--bar-muted)"/>
+<text x="206" y="82" class="sub">r</text><text x="223" y="64" class="sub">2r</text>
+<text x="165.0" y="14" text-anchor="middle" style="font-weight:600">Points filling a plane</text>
+<text x="165.0" y="228" text-anchor="middle">within r: 21 · within 2r: 81</text>
+<text x="165.0" y="246" text-anchor="middle" class="sub">log₂(81/21) ≈ 1.9</text></svg>
+</div>
+      </div>
+      <figcaption><b>Figure 1.</b> Why neighbour counts reveal dimension. Around the highlighted centre point, doubling the radius roughly doubles the count on a curve (1-D) and quadruples it on a plane (2-D). LID applies the same logic to the distances to a point&rsquo;s nearest neighbours.
+        <span class="fig-source">Conceptual illustration drawn for this post; counts are computed from the plotted points.</span></figcaption>
+    </figure>
+
+    <p>The maximum-likelihood estimator we used <a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a> turns this into a formula. For a point \(x\), take the distances \(r_1(x)\le\dots\le r_k(x)\) to its \(k\) nearest neighbours. Then</p>
+    <div class="math-block">$$\widehat{\mathrm{LID}}(x) \;=\; -\left(\frac{1}{k}\sum_{i=1}^{k}\log\frac{r_i(x)}{r_k(x)}\right)^{-1}.$$</div>
+    <p>If the near neighbours are almost as far away as the \(k\)-th one, the log-ratios are close to zero and the estimate is large: space is &ldquo;roomy&rdquo; in many directions. If the near neighbours are much closer than the \(k\)-th, the estimate is small. A layer&rsquo;s LID is the average of \(\widehat{\mathrm{LID}}(x)\) over all documents. We used \(k = 20\).</p>
+
+    <h2 id="setup">The experiment</h2>
+
+    <p>We kept the model and data deliberately simple, so that any change in LID could be attributed to depth rather than to training.</p>
+
+    <figure id="fig-setup" style="margin-top:0.6em">
+      <details class="fig-setup" open>
+        <summary>Setup (as in the released code)</summary>
+        <div class="fig-setup-body">
+          <ul>
+            <li><b>Model:</b> pretrained <code>bert-base-uncased</code>, 12 layers, hidden size 768, <b>no fine-tuning</b></li>
+            <li><b>Data:</b> 20 Newsgroups training split with headers, footers and quotes removed; the first 500 documents, cut to 1,000 characters and 512 tokens</li>
+            <li><b>Representation:</b> the <code>[CLS]</code> vector from each of the 13 hidden states (embedding layer + 12 encoder layers)</li>
+            <li><b>Estimator:</b> maximum-likelihood LID with \(k = 20\) nearest neighbours, Euclidean distance on the raw vectors, averaged over documents</li>
+            <li><b>Paper vs. code:</b> the paper&rsquo;s text describes a stratified sample, 256-token truncation and cosine-derived distances. The values below come from the released code, and they are the values printed in the paper&rsquo;s Table I.</li>
+          </ul>
+        </div>
+      </details>
+    </figure>
+
+    <p>One detail is worth knowing because it explains a gap in the results. At the embedding layer (layer 0), BERT&rsquo;s <code>[CLS]</code> vector is the sum of the <code>[CLS]</code> token embedding, the position-0 embedding and the segment embedding. None of these depend on the document, so <b>every document has exactly the same layer-0 <code>[CLS]</code> vector</b>. All neighbour distances are zero and LID is undefined, so layer 0 is excluded.</p>
+
+    <div class="exp-head" id="q1"><span class="exp-num">Question 1</span><h3>Does intrinsic dimensionality increase with transformer depth?</h3></div>
+
+    <p>This is the part of the study that stands on its own: no attribution method is involved, only the representations and a distance computation.</p>
+
+    <figure id="fig-lid">
+      <div class="fig-frame">
+        <p class="chart-title">LID of the <code>[CLS]</code> representation, by layer</p>
+        <div class="chart-set" data-chart="lid">
+<svg class="chart chart-wide" viewBox="0 0 700 320" role="img" aria-labelledby="lid-title lid-desc">
+<title id="lid-title">Local intrinsic dimensionality of the [CLS] representation at each BERT layer</title>
+<desc id="lid-desc">Line chart over layers 1 to 12. layer 1: 14.53; layer 2: 17.93; layer 3: 18.88; layer 4: 19.37; layer 5: 19.76; layer 6: 21.17; layer 7: 21.81; layer 8: 19.02; layer 9: 19.92; layer 10: 20.02; layer 11: 21.35; layer 12: 22.78. LID rises from 14.53 to 22.78 with a drop at layer 8.</desc>
+<line class="grid" x1="48" x2="670" y1="276.0" y2="276.0"/>
+<text x="40" y="280.0" text-anchor="end" class="t-mono">14</text>
+<line class="grid" x1="48" x2="670" y1="224.0" y2="224.0"/>
+<text x="40" y="228.0" text-anchor="end" class="t-mono">16</text>
+<line class="grid" x1="48" x2="670" y1="172.0" y2="172.0"/>
+<text x="40" y="176.0" text-anchor="end" class="t-mono">18</text>
+<line class="grid" x1="48" x2="670" y1="120.0" y2="120.0"/>
+<text x="40" y="124.0" text-anchor="end" class="t-mono">20</text>
+<line class="grid" x1="48" x2="670" y1="68.0" y2="68.0"/>
+<text x="40" y="72.0" text-anchor="end" class="t-mono">22</text>
+<line class="grid" x1="48" x2="670" y1="16.0" y2="16.0"/>
+<text x="40" y="20.0" text-anchor="end" class="t-mono">24</text>
+<text x="48.0" y="296" text-anchor="middle" class="t-mono">1</text>
+<text x="104.5" y="296" text-anchor="middle" class="t-mono">2</text>
+<text x="161.1" y="296" text-anchor="middle" class="t-mono">3</text>
+<text x="217.6" y="296" text-anchor="middle" class="t-mono">4</text>
+<text x="274.2" y="296" text-anchor="middle" class="t-mono">5</text>
+<text x="330.7" y="296" text-anchor="middle" class="t-mono">6</text>
+<text x="387.3" y="296" text-anchor="middle" class="t-mono">7</text>
+<text x="443.8" y="296" text-anchor="middle" class="t-mono">8</text>
+<text x="500.4" y="296" text-anchor="middle" class="t-mono">9</text>
+<text x="556.9" y="296" text-anchor="middle" class="t-mono">10</text>
+<text x="613.5" y="296" text-anchor="middle" class="t-mono">11</text>
+<text x="670.0" y="296" text-anchor="middle" class="t-mono">12</text>
+<text x="359.0" y="316" text-anchor="middle">BERT layer</text>
+<polyline class="ln" style="stroke:var(--accent)" points="48.0,262.2 104.5,173.7 161.1,149.1 217.6,136.4 274.2,126.3 330.7,89.6 387.3,72.8 443.8,145.4 500.4,122.1 556.9,119.5 613.5,84.9 670.0,47.7"/>
+<g class="pt"><title>Layer 1: LID 14.53</title><circle class="hit" cx="48.0" cy="262.2" r="11" fill="transparent"/><circle cx="48.0" cy="262.2" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 2: LID 17.93</title><circle class="hit" cx="104.5" cy="173.7" r="11" fill="transparent"/><circle cx="104.5" cy="173.7" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 3: LID 18.88</title><circle class="hit" cx="161.1" cy="149.1" r="11" fill="transparent"/><circle cx="161.1" cy="149.1" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 4: LID 19.37</title><circle class="hit" cx="217.6" cy="136.4" r="11" fill="transparent"/><circle cx="217.6" cy="136.4" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 5: LID 19.76</title><circle class="hit" cx="274.2" cy="126.3" r="11" fill="transparent"/><circle cx="274.2" cy="126.3" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 6: LID 21.17</title><circle class="hit" cx="330.7" cy="89.6" r="11" fill="transparent"/><circle cx="330.7" cy="89.6" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 7: LID 21.81</title><circle class="hit" cx="387.3" cy="72.8" r="11" fill="transparent"/><circle cx="387.3" cy="72.8" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 8: LID 19.02</title><circle class="hit" cx="443.8" cy="145.4" r="11" fill="transparent"/><circle cx="443.8" cy="145.4" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 9: LID 19.92</title><circle class="hit" cx="500.4" cy="122.1" r="11" fill="transparent"/><circle cx="500.4" cy="122.1" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 10: LID 20.02</title><circle class="hit" cx="556.9" cy="119.5" r="11" fill="transparent"/><circle cx="556.9" cy="119.5" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 11: LID 21.35</title><circle class="hit" cx="613.5" cy="84.9" r="11" fill="transparent"/><circle cx="613.5" cy="84.9" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 12: LID 22.78</title><circle class="hit" cx="670.0" cy="47.7" r="11" fill="transparent"/><circle cx="670.0" cy="47.7" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<text x="58.0" y="266.2" text-anchor="start" class="t-mono t-strong">14.53</text>
+<text x="387.3" y="60.8" text-anchor="middle" class="t-mono t-strong">21.81</text>
+<text x="443.8" y="165.4" text-anchor="middle" class="t-mono t-strong">19.02</text>
+<text x="662.0" y="35.7" text-anchor="end" class="t-mono t-strong">22.78</text>
+</svg>
+<svg class="chart chart-compact" viewBox="0 0 360 250" role="img" aria-labelledby="lid-title-c lid-desc-c">
+<title id="lid-title-c">Local intrinsic dimensionality of the [CLS] representation at each BERT layer</title>
+<desc id="lid-desc-c">Line chart over layers 1 to 12. layer 1: 14.53; layer 2: 17.93; layer 3: 18.88; layer 4: 19.37; layer 5: 19.76; layer 6: 21.17; layer 7: 21.81; layer 8: 19.02; layer 9: 19.92; layer 10: 20.02; layer 11: 21.35; layer 12: 22.78. LID rises from 14.53 to 22.78 with a drop at layer 8.</desc>
+<line class="grid" x1="36" x2="344" y1="208.0" y2="208.0"/>
+<text x="28" y="212.0" text-anchor="end" class="t-mono">14</text>
+<line class="grid" x1="36" x2="344" y1="169.2" y2="169.2"/>
+<text x="28" y="173.2" text-anchor="end" class="t-mono">16</text>
+<line class="grid" x1="36" x2="344" y1="130.4" y2="130.4"/>
+<text x="28" y="134.4" text-anchor="end" class="t-mono">18</text>
+<line class="grid" x1="36" x2="344" y1="91.6" y2="91.6"/>
+<text x="28" y="95.6" text-anchor="end" class="t-mono">20</text>
+<line class="grid" x1="36" x2="344" y1="52.8" y2="52.8"/>
+<text x="28" y="56.8" text-anchor="end" class="t-mono">22</text>
+<line class="grid" x1="36" x2="344" y1="14.0" y2="14.0"/>
+<text x="28" y="18.0" text-anchor="end" class="t-mono">24</text>
+<text x="36.0" y="228" text-anchor="middle" class="t-mono">1</text>
+<text x="64.0" y="228" text-anchor="middle" class="t-mono">2</text>
+<text x="92.0" y="228" text-anchor="middle" class="t-mono">3</text>
+<text x="120.0" y="228" text-anchor="middle" class="t-mono">4</text>
+<text x="148.0" y="228" text-anchor="middle" class="t-mono">5</text>
+<text x="176.0" y="228" text-anchor="middle" class="t-mono">6</text>
+<text x="204.0" y="228" text-anchor="middle" class="t-mono">7</text>
+<text x="232.0" y="228" text-anchor="middle" class="t-mono">8</text>
+<text x="260.0" y="228" text-anchor="middle" class="t-mono">9</text>
+<text x="288.0" y="228" text-anchor="middle" class="t-mono">10</text>
+<text x="316.0" y="228" text-anchor="middle" class="t-mono">11</text>
+<text x="344.0" y="228" text-anchor="middle" class="t-mono">12</text>
+<text x="190.0" y="246" text-anchor="middle">BERT layer</text>
+<polyline class="ln" style="stroke:var(--accent)" points="36.0,197.7 64.0,131.7 92.0,113.3 120.0,103.8 148.0,96.3 176.0,68.9 204.0,56.4 232.0,110.6 260.0,93.1 288.0,91.2 316.0,65.4 344.0,37.6"/>
+<g class="pt"><title>Layer 1: LID 14.53</title><circle class="hit" cx="36.0" cy="197.7" r="11" fill="transparent"/><circle cx="36.0" cy="197.7" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 2: LID 17.93</title><circle class="hit" cx="64.0" cy="131.7" r="11" fill="transparent"/><circle cx="64.0" cy="131.7" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 3: LID 18.88</title><circle class="hit" cx="92.0" cy="113.3" r="11" fill="transparent"/><circle cx="92.0" cy="113.3" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 4: LID 19.37</title><circle class="hit" cx="120.0" cy="103.8" r="11" fill="transparent"/><circle cx="120.0" cy="103.8" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 5: LID 19.76</title><circle class="hit" cx="148.0" cy="96.3" r="11" fill="transparent"/><circle cx="148.0" cy="96.3" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 6: LID 21.17</title><circle class="hit" cx="176.0" cy="68.9" r="11" fill="transparent"/><circle cx="176.0" cy="68.9" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 7: LID 21.81</title><circle class="hit" cx="204.0" cy="56.4" r="11" fill="transparent"/><circle cx="204.0" cy="56.4" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 8: LID 19.02</title><circle class="hit" cx="232.0" cy="110.6" r="11" fill="transparent"/><circle cx="232.0" cy="110.6" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 9: LID 19.92</title><circle class="hit" cx="260.0" cy="93.1" r="11" fill="transparent"/><circle cx="260.0" cy="93.1" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 10: LID 20.02</title><circle class="hit" cx="288.0" cy="91.2" r="11" fill="transparent"/><circle cx="288.0" cy="91.2" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 11: LID 21.35</title><circle class="hit" cx="316.0" cy="65.4" r="11" fill="transparent"/><circle cx="316.0" cy="65.4" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<g class="pt"><title>Layer 12: LID 22.78</title><circle class="hit" cx="344.0" cy="37.6" r="11" fill="transparent"/><circle cx="344.0" cy="37.6" r="4.5" style="fill:var(--accent);stroke:var(--panel);stroke-width:2"/></g>
+<text x="46.0" y="201.7" text-anchor="start" class="t-mono t-strong">14.53</text>
+<text x="204.0" y="44.4" text-anchor="middle" class="t-mono t-strong">21.81</text>
+<text x="232.0" y="130.6" text-anchor="middle" class="t-mono t-strong">19.02</text>
+<text x="336.0" y="25.6" text-anchor="end" class="t-mono t-strong">22.78</text>
+</svg>
+</div>
+        <details class="data-view">
+          <summary>Show data</summary>
+          <div class="table-wrap" style="margin:6px 0 0">
+          <table class="results">
+            <thead><tr><th scope="col">Layer</th><th scope="col" class="num">1</th><th scope="col" class="num">2</th><th scope="col" class="num">3</th><th scope="col" class="num">4</th><th scope="col" class="num">5</th><th scope="col" class="num">6</th><th scope="col" class="num">7</th><th scope="col" class="num">8</th><th scope="col" class="num">9</th><th scope="col" class="num">10</th><th scope="col" class="num">11</th><th scope="col" class="num">12</th></tr></thead>
+            <tbody><tr><td>LID</td><td class="num">14.53</td><td class="num">17.93</td><td class="num">18.88</td><td class="num">19.37</td><td class="num">19.76</td><td class="num">21.17</td><td class="num">21.81</td><td class="num">19.02</td><td class="num">19.92</td><td class="num">20.02</td><td class="num">21.35</td><td class="num">22.78</td></tr></tbody>
+          </table>
+          </div>
+        </details>
+      </div>
+      <figcaption><b>Figure 2.</b> Mean LID of BERT&rsquo;s <code>[CLS]</code> representation at layers 1&ndash;12 (500 documents, \(k = 20\)). LID climbs steadily to layer 7, drops sharply at layer 8, and recovers to its maximum at layer 12. The vertical axis starts at 14.
+        <span class="fig-source">Plotted from <code>results/lid_scores_by_layer.csv</code> in the <a href="https://github.com/NikolasRoufas/Deeper-Layers-Explain-Better">public repository</a> (MIT licence). These are the values in Fig. 1 and Table I of the paper.</span></figcaption>
+    </figure>
+
+    <p><b>What we observed.</b> LID rises from 14.53 at layer 1 to 22.78 at layer 12, an increase of 57%. The rise is not monotonic. After reaching 21.81 at layer 7, LID falls to 19.02 at layer 8 and needs four more layers to exceed its layer-7 value. Across the 12 layers, the Pearson correlation between LID and layer index is 0.772, and Spearman&rsquo;s \(\rho\) is 0.818. Because the model is frozen and the estimator has no random component, rerunning the code reproduces these values exactly.</p>
+
+    <p><b>How we read it.</b> As a document passes through BERT, its <code>[CLS]</code> vector moves into neighbourhoods that vary along more directions. That fits the broad picture from other work on intrinsic dimension in deep networks, where the dimension of representations changes systematically with depth rather than staying flat <a class="cite" href="#ref-8">[8]</a><a class="cite" href="#ref-9">[9]</a>. The drop at layer 8 is the most interesting feature of the curve. The paper suggests a transition from syntactic to semantic encoding, but we did not test that, and it remains a hypothesis.</p>
+
+    <div class="note">
+      <span class="note-label">What this does not establish</span>
+      <p>The curve describes one representation (<code>[CLS]</code>) of one pretrained model, on one dataset, at one \(k\). In a BERT model that has not been fine-tuned, <code>[CLS]</code> is shaped by the pre-training objectives, not by any downstream task, so the curve may look different after fine-tuning. The paper reports a sensitivity check over \(k \in \{10, 20, 30\}\) that is not in the released code. With 500 points in 768 dimensions, LID estimates also carry finite-sample bias, which affects absolute values more than the layer-to-layer trend.</p>
+    </div>
+
+    <div class="exp-head" id="q2"><span class="exp-num">Question 2</span><h3>Do higher-LID layers produce better explanations?</h3></div>
+
+    <p>This was the question in the paper&rsquo;s title. The paper answers it with a correlation: it reports a mean SHAP score for each layer (its Table I) and a Pearson correlation of <i>r</i> = 0.7721 (<i>p</i> &lt; 0.01) between LID and SHAP across the 12 layers, with Spearman \(\rho\) = 0.736. It also states that Integrated Gradients could not be computed.</p>
+
+    <p>Trying to reproduce this from the released materials, we found the following.</p>
+
+    <div class="table-wrap" tabindex="0" role="region" aria-labelledby="corr-cap">
+    <table class="results">
+      <caption id="corr-cap">Table 1. Correlations across the 12 layers. The first two rows are computed for this post from public data; the last row is as printed in the paper.</caption>
+      <thead><tr><th scope="col">Quantity</th><th scope="col" class="num">Pearson <i>r</i></th><th scope="col" class="num">Spearman \(\rho\)</th><th scope="col">Source</th></tr></thead>
+      <tbody>
+        <tr><td>LID vs. layer index</td><td class="num">0.7721</td><td class="num">0.818</td><td class="dim">released LID values (repository)</td></tr>
+        <tr><td>LID vs. mean SHAP</td><td class="num">0.918</td><td class="num">0.930</td><td class="dim">computed from the paper&rsquo;s Table I</td></tr>
+        <tr><td>&ldquo;LID vs. SHAP&rdquo;, reported</td><td class="num">0.7721</td><td class="num">0.736</td><td class="dim">paper, Section IV-C</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <ul>
+      <li><b>The released code does not compute per-layer attributions.</b> It computes one model-level SHAP summary. In the included run, SHAP did not complete and the script fell back to a confidence score. Integrated Gradients returned a placeholder value, consistent with the paper&rsquo;s statement that IG could not be computed. The repository&rsquo;s README documents both.</li>
+      <li><b>The figure printed as the per-layer SHAP figure (Fig. 2) shows these run-level summary values</b> (fallback SHAP, IG placeholder, LID mean, LID standard deviation), not SHAP by layer.</li>
+      <li><b>The reported <i>r</i> = 0.7721 matches, to four decimals, the correlation between LID and layer index</b> that the released code computes. Correlating LID with the SHAP column of Table I gives 0.918 instead.</li>
+    </ul>
+
+    <p><b>How we read it.</b> We cannot reproduce the per-layer SHAP values in Table I from released code or logs, and the correlation the paper reports as LID&ndash;SHAP coincides with the LID&ndash;depth correlation. Until the attribution analysis is re-run with code that others can execute, <b>the link between LID and explanations should be treated as an open hypothesis, not a finding.</b> The LID curve in Question 1 is unaffected.</p>
+
+    <h2 id="confound">Why a layer-wise correlation would not settle it anyway</h2>
+
+    <p>Suppose the attribution values were fully reproducible. A strong correlation between LID and SHAP across layers would still be weak evidence, for three reasons.</p>
+
+    <ol>
+      <li><b>Depth is a confounder.</b> Both quantities are measured once per layer, and layers are ordered. Any two quantities that drift with depth will correlate across layers, whether or not one has anything to do with the other. LID already correlates with depth at 0.77. A meaningful test would ask whether LID predicts attribution behaviour <i>beyond</i> what depth predicts. For example, compare across models with different depth profiles, or control for layer index.</li>
+      <li><b>Twelve points are not twelve independent observations.</b> Neighbouring layers share most of their computation through the residual stream. A <i>p</i>-value that treats the 12 layers as independent samples overstates the evidence.</li>
+      <li><b>Magnitude is not faithfulness.</b> Even a perfect relationship between LID and mean |SHAP| would show that higher-dimensional layers receive <i>more</i> attribution mass, not that their explanations are <i>more correct</i>. In a model that was never fine-tuned, attributions explain a randomly initialised classification head. Their faithfulness to any meaningful decision is not defined.</li>
+    </ol>
+
+    <p>This is the central conceptual point. <b>Representational complexity and explanation faithfulness are different properties</b>, and a geometric measure can only become a proxy for the second after it has been validated against intervention-based tests.</p>
+
+    <h2 id="sound">What a sound version of the test would look like</h2>
+
+    <p>The original question is still worth asking. A version that could answer it would:</p>
+    <ul>
+      <li>fine-tune the model on the task, so that attributions explain an actual decision;</li>
+      <li>compute attributions with respect to each layer&rsquo;s representation (for example, layer-conditional Integrated Gradients), with fixed seeds and released code;</li>
+      <li>score the explanations for <i>faithfulness</i> (comprehensiveness and sufficiency <a class="cite" href="#ref-7">[7]</a>), not only magnitude;</li>
+      <li>compare several models and datasets, including a randomly initialised BERT as a control for architecture-driven geometry;</li>
+      <li>test whether LID adds predictive value after controlling for depth;</li>
+      <li>report the sensitivity of LID to \(k\), sample size and distance metric.</li>
+    </ul>
+
+    <h2 id="learned">What we learned</h2>
+    <ol class="takeaways">
+      <li><b>BERT&rsquo;s <code>[CLS]</code> geometry grows more complex with depth, but not smoothly.</b> LID rises by 57% from layer 1 to layer 12, with a sharp, reproducible drop at layer 8.</li>
+      <li><b>The explanation side of the study is not yet supported by reproducible evidence.</b> The released code does not produce per-layer attributions, and the reported correlation coincides with the LID&ndash;depth correlation.</li>
+      <li><b>Correlations across layers are confounded by depth.</b> Anything that trends with depth will correlate with LID.</li>
+      <li><b>Complexity is not faithfulness.</b> A geometric property of a representation can only stand in for explanation quality after it is validated against interventions.</li>
+    </ol>
+
+    <h2 id="limits">Limitations and open questions</h2>
+    <ul>
+      <li>One model, one dataset, one representation, one \(k\). Does the layer-8 drop appear in other BERT-family models, in fine-tuned models, or for token-level representations?</li>
+      <li>What is the drop at layer 8? A change in anisotropy, a reorganisation of the residual stream, or an artefact of the estimator? Comparing several intrinsic-dimension estimators would help.</li>
+      <li>Does LID carry information about faithfulness once depth is controlled for? This is the question the paper&rsquo;s title asks, and it is still open.</li>
+      <li>The paper&rsquo;s methodology text and the released code differ in sampling, truncation and distance metric. The numbers here follow the code.</li>
+    </ul>
+
+    <div class="endmatter" id="paper">
+      <h2>The paper</h2>
+      <div class="paper-card">
+        <p class="paper-title">Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability</p>
+        <p class="paper-authors">Nikolaos Roufas, Athanasios Kanavos, Ioannis Karamitsos, Khalil Al-Hussaeni, Manolis Maragoudakis</p>
+        <p class="paper-venue">2025 IEEE International Conference on Big Data (BigData), Macau, 8&ndash;11 December 2025, pp. 6552&ndash;6559.</p>
+        <ul class="paper-links">
+          <li><a href="https://ieeexplore.ieee.org/document/11402387">IEEE Xplore</a></li>
+          <li><a href="https://doi.org/10.1109/BigData66926.2025.11402387">DOI: 10.1109/BigData66926.2025.11402387</a></li>
+          <li><a href="https://github.com/NikolasRoufas/Deeper-Layers-Explain-Better">Code (GitHub)</a></li>
+        </ul>
+      </div>
+
+      <h2>Code and reproducibility</h2>
+      <p>The <a href="https://github.com/NikolasRoufas/Deeper-Layers-Explain-Better">repository</a> (MIT licence) reproduces the layer-wise LID values in Figure 2 of this post (Fig. 1 and the LID column of Table I in the paper). Its README lists what it does not reproduce: the per-layer SHAP scores, the LID&ndash;SHAP correlation, the \(k\)-sensitivity check and the rank-correlation diagnostics. It also documents the fallback and placeholder behaviour of the attribution step.</p>
+
+      <h2>Credits</h2>
+      <p>The paper is joint work with Athanasios Kanavos (University of the Aegean), Ioannis Karamitsos (Rochester Institute of Technology, Dubai), Khalil Al-Hussaeni (Rochester Institute of Technology, Dubai) and Manolis Maragoudakis (Ionian University). This post is my own account. The reproducibility analysis in Question 2 and the discussion of confounding are mine.</p>
+
+      <h2>Cite the paper</h2>
+      <div class="bibtex">
+        <button class="copy-btn" type="button" data-copy="#bibtex-lid">Copy</button>
+<pre id="bibtex-lid">@inproceedings{roufas2025deeper,
+  title     = {Do Deeper Layers Explain Better? An {LID}-Based Study
+               of Transformer Explainability},
+  author    = {Roufas, Nikolaos and Kanavos, Athanasios and
+               Karamitsos, Ioannis and Al-Hussaeni, Khalil and
+               Maragoudakis, Manolis},
+  booktitle = {2025 IEEE International Conference on Big Data (BigData)},
+  pages     = {6552--6559},
+  year      = {2025},
+  doi       = {10.1109/BigData66926.2025.11402387}
+}</pre>
+      </div>
+
+      <h2>References</h2>
+      <ol class="references">
+        <li id="ref-1">N. Roufas, A. Kanavos, I. Karamitsos, K. Al-Hussaeni, M. Maragoudakis. Do Deeper Layers Explain Better? An LID-Based Study of Transformer Explainability. <i>IEEE BigData</i>, 2025. <a href="https://doi.org/10.1109/BigData66926.2025.11402387">doi:10.1109/BigData66926.2025.11402387</a></li>
+        <li id="ref-2">E. Levina, P. J. Bickel. Maximum Likelihood Estimation of Intrinsic Dimension. <i>NeurIPS</i>, 2004. <a href="https://papers.nips.cc/paper_files/paper/2004/hash/74934548253bcab8490ebd74afed7031-Abstract.html">Proceedings</a></li>
+        <li id="ref-3">L. Amsaleg, O. Chelly, T. Furon, S. Girard, M. E. Houle, K. Kawarabayashi, M. Nett. Estimating Local Intrinsic Dimensionality. <i>KDD</i>, 2015. <a href="https://doi.org/10.1145/2783258.2783405">doi:10.1145/2783258.2783405</a></li>
+        <li id="ref-4">S. M. Lundberg, S.-I. Lee. A Unified Approach to Interpreting Model Predictions. <i>NeurIPS</i>, 2017. <a href="https://arxiv.org/abs/1705.07874">arXiv</a></li>
+        <li id="ref-5">M. Sundararajan, A. Taly, Q. Yan. Axiomatic Attribution for Deep Networks. <i>ICML</i>, 2017. <a href="https://arxiv.org/abs/1703.01365">arXiv</a></li>
+        <li id="ref-6">S. Jain, B. C. Wallace. Attention is not Explanation. <i>NAACL</i>, 2019. <a href="https://aclanthology.org/N19-1357/">ACL Anthology</a></li>
+        <li id="ref-7">J. DeYoung, S. Jain, N. F. Rajani, E. Lehman, C. Xiong, R. Socher, B. C. Wallace. ERASER: A Benchmark to Evaluate Rationalized NLP Models. <i>ACL</i>, 2020. <a href="https://aclanthology.org/2020.acl-main.408/">ACL Anthology</a></li>
+        <li id="ref-8">A. Ansuini, A. Laio, J. H. Macke, D. Zoccolan. Intrinsic Dimension of Data Representations in Deep Neural Networks. <i>NeurIPS</i>, 2019. <a href="https://arxiv.org/abs/1905.12784">arXiv</a></li>
+        <li id="ref-9">L. Valeriani, D. Doimo, F. Cuturello, A. Laio, A. Ansuini, A. Cazzaniga. The Geometry of Hidden Representations of Large Transformer Models. <i>NeurIPS</i>, 2023. <a href="https://arxiv.org/abs/2302.00294">arXiv</a></li>
+        <li id="ref-10">J. Devlin, M.-W. Chang, K. Lee, K. Toutanova. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. <i>NAACL-HLT</i>, 2019. <a href="https://aclanthology.org/N19-1423/">ACL Anthology</a></li>
+      </ol>
+
+      <nav class="post-nav" aria-label="Post navigation">
+        <a href="/blog/">&larr; All research notes</a>
+        <a href="/#pub-bigdata">Publication list &rarr;</a>
+      </nav>
+    </div>
+
+  </div>
+</article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Nikolaos Roufas &middot; <a href="/">Home</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="https://github.com/NikolasRoufas/NikolasRoufas.github.io">Source</a></p>
+</footer>
+</body>
+</html>

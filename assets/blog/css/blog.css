@@ -1061,3 +1061,66 @@ ol.references li:target { background: var(--tint); border-radius: 4px; }
   table.results { font-size: 14px; }
   table.results th, table.results td { padding-right: 9px; }
 }
+
+/* Two schematic panels side by side (stack on phones) */
+.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 560px) { .panel-grid { grid-template-columns: 1fr; } }
+
+/* Vertical pipeline schematic */
+.pipeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.pipeline > li {
+  position: relative;
+  width: min(100%, 420px);
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  text-align: center;
+  margin: 0;
+}
+.pipeline > li + li::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -21px;
+  height: 18px;
+  border-left: 1.5px solid var(--text-muted);
+}
+.pipeline > li + li::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 4px);
+  top: -9px;
+  border: 4px solid transparent;
+  border-top: 6px solid var(--text-muted);
+}
+.pipeline .pl-acc { border-color: var(--accent); background: var(--tint); }
+.pipeline .pl-name { display: block; font-weight: 600; font-size: 15.5px; color: var(--text); }
+.pipeline .pl-sub { display: block; font-size: 13.5px; color: var(--text-muted); line-height: 1.4; }
+.pipeline .pl-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  width: min(100%, 560px);
+}
+.pipeline .pl-split > div {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+@media (max-width: 480px) { .pipeline .pl-split { grid-template-columns: 1fr; } }
+
+/* Keep the "Schematic" tag clear of the figure content */
+.fig-frame:has(> .schematic-tag) { padding-top: 38px; }
