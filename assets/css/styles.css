@@ -391,3 +391,15 @@ main p { margin: 0 0 14px; max-width: 66ch; }
   cursor: pointer;
 }
 .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Narrow screens: wordmark and theme toggle share the first row, links wrap onto the second */
+@media (max-width: 640px) {
+  .topnav { flex-wrap: wrap; row-gap: 10px; }
+  .topnav .nav-links {
+    order: 3;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px 20px;
+  }
+}

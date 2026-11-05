@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+
+<title>Research notes | Nikolaos Roufas</title>
+<meta name="description" content="Research notes by Nikolaos Roufas: long-form explanations of published work in natural language processing and machine learning, with the experiments, evidence and limitations behind each result.">
+<meta name="author" content="Nikolaos Roufas">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nikolaosroufas.me/blog/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nikolaos Roufas">
+<meta property="og:title" content="Research notes | Nikolaos Roufas">
+<meta property="og:description" content="Long-form explanations of published research in NLP and machine learning: the question, the experiments, the evidence and the limitations.">
+<meta property="og:url" content="https://nikolaosroufas.me/blog/">
+<meta property="og:image" content="https://nikolaosroufas.me/assets/blog/legner/legner-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The LegNER training and evaluation pipeline.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Research notes | Nikolaos Roufas">
+<meta name="twitter:description" content="Long-form explanations of published research in NLP and machine learning.">
+<meta name="twitter:image" content="https://nikolaosroufas.me/assets/blog/legner/legner-og.png">
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&amp;display=swap&amp;text=Nikolaos%20Roufas">
+<link rel="stylesheet" href="/assets/css/wordmark.css">
+<link rel="stylesheet" href="/assets/blog/css/blog.css">
+<script defer src="/assets/blog/js/blog.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": "https://nikolaosroufas.me/blog/#blog",
+  "url": "https://nikolaosroufas.me/blog/",
+  "name": "Research notes",
+  "description": "Long-form explanations of published research in natural language processing and machine learning.",
+  "inLanguage": "en",
+  "author": { "@type": "Person", "@id": "https://nikolaosroufas.me/#person", "name": "Nikolaos Roufas", "url": "https://nikolaosroufas.me/" },
+  "isPartOf": { "@id": "https://nikolaosroufas.me/#website" },
+  "blogPost": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://nikolaosroufas.me/blog/legner/#post",
+      "headline": "Can Transformers Reliably Anonymize Legal Documents?",
+      "url": "https://nikolaosroufas.me/blog/legner/",
+      "datePublished": "2026-11-05",
+      "image": "https://nikolaosroufas.me/assets/blog/legner/legner-og.png",
+      "author": { "@id": "https://nikolaosroufas.me/#person" }
+    }
+  ]
+}
+</script>
+</head>
+<body class="blog">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header>
+  <nav class="site-nav" aria-label="Site">
+    <a class="wordmark" href="/"><span class="wm-first">Nikolaos</span> <span class="wm-last">Roufas</span></a>
+    <div class="nav-links">
+      <a href="/#publications">Publications</a>
+      <a href="/blog/" aria-current="page">Blog</a>
+      <a href="/#experience">Experience</a>
+      <a href="/NikolaosRoufas_CV.pdf">CV</a>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">Dark mode</button>
+  </nav>
+</header>
+
+<main id="main" class="col">
+  <header class="blog-head">
+    <h1>Research notes</h1>
+    <p>Long-form accounts of published papers: the question behind each one, how we tested it, what the evidence shows, and what it leaves open.</p>
+  </header>
+
+  <ul class="post-list">
+    <li class="post-item">
+      <figure class="post-item__figure">
+        <img src="/assets/blog/legner/legner-architecture-900.webp" width="900" height="425" loading="lazy" decoding="async" alt="">
+      </figure>
+      <div>
+        <p class="post-item__meta"><span class="post-item__kicker">Legal NLP</span> &middot; <time datetime="2026-11-05">November 5, 2026</time> &middot; 15 min read</p>
+        <h2 class="post-item__title"><a href="/blog/legner/">Can Transformers Reliably Anonymize Legal Documents?</a></h2>
+        <p class="post-item__summary">Adapting BERT to legal language lifted entity-level F1 from 93.6% for the best legal-domain baseline to 99.4% on held-out EU judgments. This note follows the experiments behind that number, and explains why a 99% F1 score still does not make redaction reliable on its own.</p>
+        <p class="post-item__paper">Based on Karamitsos, Roufas, Al-Hussaeni &amp; Kanavos, <i>Frontiers in Artificial Intelligence</i>, 2025</p>
+      </div>
+    </li>
+  </ul>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Nikolaos Roufas &middot; <a href="/">Home</a> &middot; <a href="https://github.com/NikolasRoufas/NikolasRoufas.github.io">Source</a></p>
+</footer>
+</body>
+</html>
